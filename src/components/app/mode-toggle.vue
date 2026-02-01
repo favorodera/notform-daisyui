@@ -8,7 +8,7 @@ const mode = useColorMode()
 <template>
   <DropdownMenu>
     <DropdownMenuTrigger as-child>
-      <Button variant="outline">
+      <Button variant="outline" size="icon-sm">
         <Icon icon="radix-icons:moon" class="
           size-[1.2rem] scale-100 rotate-0 transition-all
           dark:scale-0 dark:-rotate-90

@@ -29,7 +29,7 @@ const navigation = computed(() => {
 
     <header class="
       sticky top-0 flex w-full items-center justify-between border-b
-      border-dashed border-border p-4
+      border-dashed border-border px-4 py-2
     ">
     <img src="https://notform-docs.vercel.app/logo.svg" alt="Logo" class="h-5">
     <ModeToggle></ModeToggle>
@@ -37,7 +37,7 @@ const navigation = computed(() => {
 
   <main class="grid h-full grid-cols-1 place-items-center gap-4 p-4">
 
-    <p class="text-center text-sm text-muted-foreground">
+    <p class="text-center text-muted-foreground">
       A visual representation on using  <Button variant="link" as-child>
         <a href="https://notform-docs.vercel.app/" target="_blank" rel="noopener">
           notform
