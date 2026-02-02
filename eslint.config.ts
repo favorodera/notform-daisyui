@@ -17,7 +17,7 @@ export default defineConfigWithVueTs(
 
   globalIgnores(['**/dist/**', '**/dist-ssr/**', '**/coverage/**']),
 
-  ...pluginVue.configs['flat/essential'],
+  ...pluginVue.configs['flat/recommended'],
   vueTsConfigs.recommended,
 
   {
@@ -40,11 +40,14 @@ export default defineConfigWithVueTs(
 
   {
     rules: {
-      '@stylistic/quotes': ['error', 'single', { avoidEscape: true }],
       '@stylistic/no-multiple-empty-lines': ['error', { max: 2, maxEOF: 2, maxBOF: 0 }],
       '@stylistic/padded-blocks': 'off',
       '@stylistic/no-trailing-spaces': ['error', { skipBlankLines: true }],
+      '@stylistic/brace-style': 'off',
       'vue/multi-word-component-names': 'off',
+      'vue/block-tag-newline': ['error', { multiline: 'ignore', singleline: 'ignore' }],
+      'vue/multiline-html-element-content-newline': ['error', { allowEmptyLines: true, ignores: ['pre', 'textarea'] }],
+      '@stylistic/quotes': ['error', 'single', { avoidEscape: true }],
       'better-tailwindcss/no-unknown-classes': ['warn', {
         ignore: ['toaster'],
       }],

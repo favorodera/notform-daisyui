@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { Input } from '@/components/input'
-import { NotForm, NotField } from 'notform'
+import { NotForm, NotField, NotMessage } from 'notform'
 
 const { id, reset, submit, state } = useNotForm({
   schema: z.object({
@@ -16,61 +15,61 @@ const { id, reset, submit, state } = useNotForm({
   initialState: {
     username: '',
   },
-  onSubmit: data => submitToast(data),
+  onSubmit: data => newToast(data),
 })
 
 </script>
 
 <template>
-<Display title="Input">
-
-  <NotForm :id @submit="submit" @reset="reset()">
-
-    <FieldGroup>
-
-      <NotField name="username" v-slot="{ errors, name, methods }">
-
-        <Field :data-invalid="!!errors.length">
-
-          <FieldLabel :for="name">
+  <Display
+    :form-id="id"
+    title="Input"
+  >
+    <NotForm
+      :id
+      @submit="submit"
+      @reset="reset()"
+    >
+      <NotField
+        v-slot="{ errors, name, methods }"
+        name="username"
+      >
+        <div class="fieldset">
+          <label
+            :for="name"
+            class="fieldset-legend"
+          >
             Username
-          </FieldLabel>
+          </label>
 
-          <Input
+          <input
             :id="name"
             v-bind="methods"
             v-model="state.username"
-            :aria-invalid="!!errors.length"
-            placeholder="shadcn"
+            type="text"
+            class="validator input w-full"
+            placeholder="daisyui"
             autocomplete="username"
-          />
+            :aria-invalid="!!errors.length"
+          >
 
-          <FieldDescription>
+          <div
+            class="label text-wrap"
+          >
             This is your public display name. Must be between 3 and 10
             characters. Must only contain letters, numbers, and
             underscores.
-          </FieldDescription>
+          </div>
 
-          <FieldError v-if="errors.length" :errors="errors" />
-
-        </Field>
+          <NotMessage
+            :name="name"
+            class="validator-hint"
+          />
+        </div>
 
       </NotField>
 
-    </FieldGroup>
+    </NotForm>
 
-  </NotForm>
-
-  <template #footer>
-     <Field orientation="horizontal">
-        <Button type="reset" variant="outline" :form="id">
-          Reset
-        </Button>
-        <Button type="submit" :form="id">
-          Submit
-        </Button>
-      </Field>
-  </template>
-
-</Display>
+  </Display>
 </template>

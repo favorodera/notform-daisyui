@@ -14,14 +14,13 @@ export default defineConfig({
       dirs: ['src/components'],
     }),
     AutoImport({
-      dirs: ['src/utils'],
+      dirs: ['src/composables'],
       imports: [
         'vue',
         'vue-router',
         {
-          'notform': ['useNotForm'],
-          'zod': ['z'],
-          'vue-sonner': ['toast'],
+          notform: ['useNotForm'],
+          zod: ['z'],
         },
       ],
     }),

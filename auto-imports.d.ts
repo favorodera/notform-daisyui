@@ -24,6 +24,7 @@ declare global {
   const isRef: typeof import('vue').isRef
   const isShallow: typeof import('vue').isShallow
   const markRaw: typeof import('vue').markRaw
+  const newToast: typeof import('./src/composables/use-toast').newToast
   const nextTick: typeof import('vue').nextTick
   const onActivated: typeof import('vue').onActivated
   const onBeforeMount: typeof import('vue').onBeforeMount
@@ -49,12 +50,13 @@ declare global {
   const shallowReactive: typeof import('vue').shallowReactive
   const shallowReadonly: typeof import('vue').shallowReadonly
   const shallowRef: typeof import('vue').shallowRef
-  const submitToast: typeof import('./src/utils/submit-toast').default
+  const submitToast: typeof import('./src/composables/use-toast').default
   const toRaw: typeof import('vue').toRaw
   const toRef: typeof import('vue').toRef
   const toRefs: typeof import('vue').toRefs
   const toValue: typeof import('vue').toValue
   const toast: typeof import('vue-sonner').toast
+  const toasts: typeof import('./src/composables/use-toast').toasts
   const triggerRef: typeof import('vue').triggerRef
   const unref: typeof import('vue').unref
   const useAttrs: typeof import('vue').useAttrs
@@ -68,6 +70,7 @@ declare global {
   const useRouter: typeof import('vue-router').useRouter
   const useSlots: typeof import('vue').useSlots
   const useTemplateRef: typeof import('vue').useTemplateRef
+  const useToast: typeof import('./src/composables/use-toast').default
   const watch: typeof import('vue').watch
   const watchEffect: typeof import('vue').watchEffect
   const watchPostEffect: typeof import('vue').watchPostEffect
