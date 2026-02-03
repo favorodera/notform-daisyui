@@ -1,8 +1,7 @@
 <script lang="ts" setup>
-import { X } from 'lucide-vue-next'
-import { NotField, NotForm, NotArrayField } from 'notform'
+import { NotField, NotForm, NotArrayField, NotMessage } from 'notform'
 
-const { state, id, submit, reset, schema, getFieldErrors } = useNotForm({
+const { state, id, submit, reset, schema } = useNotForm({
   schema: z.object({
     emails: z
       .array(
@@ -16,116 +15,92 @@ const { state, id, submit, reset, schema, getFieldErrors } = useNotForm({
   initialState: {
     emails: [{ address: '' }, { address: '' }],
   },
-  onSubmit: data => submitToast(data),
+  onSubmit: data => newToast(data),
 })
-
-const emailsRootErrors = computed(() => getFieldErrors('emails'))
 </script>
 
 <template>
-  <Display title="Array Fields">
+  <Display
+    :form-id="id"
+    title="Array Fields"
+  >
     <NotForm
       :id="id"
       @submit="submit"
       @reset="reset()"
     >
-      <FieldSet class="gap-4">
-        <FieldLegend variant="label">
-          Email Addresses
-        </FieldLegend>
-        <FieldDescription>
-          Add up to 5 email addresses where we can contact you.
-        </FieldDescription>
 
-        <FieldGroup class="gap-4">
-          <NotArrayField
-            v-slot="{ fields, remove,append }"
-            name="emails"
-            :schema="schema.shape.emails"
-          >
+      <NotArrayField
+        v-slot="{ fields, remove, append }"
+        name="emails"
+        :schema="schema.shape.emails"
+      >
+      
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">
+            Email Addresses
+          </legend>
+          <div class="fieldset-label text-wrap">
+            Add up to 5 email addresses where we can contact you.
+          </div>
+
+          <div class="flex flex-col gap-2">
+
             <NotField
               v-for="(field, index) in fields"
               :key="field.key"
               v-slot="{ errors, methods, name }"
               :name="`emails[${index}].address`"
             >
-              <Field
-                orientation="horizontal"
-                :data-invalid="!!errors.length"
+              <label
+                :for="name"
+                class="validator join w-full"
               >
-                <FieldContent>
-                  <InputGroup>
-                    <InputGroupInput
-                      :id="name"
-                      v-bind="methods"
-                      v-model="state.emails[index]!.address"
-                      :aria-invalid="!!errors.length"
-                      placeholder="name@example.com"
-                      type="email"
-                      autocomplete="email"
-                    />
-
-                    <InputGroupAddon
-                      v-if="fields.length > 1"
-                      align="inline-end"
-                    >
-                      <InputGroupButton
-                        type="button"
-                        variant="ghost"
-                        size="icon-xs"
-                        :aria-label="`Remove email ${index + 1}`"
-                        @click="remove(index)"
-                      >
-                        <X />
-                      </InputGroupButton>
-                    </InputGroupAddon>
-                  </InputGroup>
-
-                  <FieldError
-                    v-if="errors.length"
-                    :errors="errors"
-                  />
-                </FieldContent>
-              </Field>
+                <input
+                  :id="name"
+                  v-model="state.emails[index]!.address"
+                  type="email"
+                  class="validator input join-item w-full"
+                  placeholder="name@example.com"
+                  autocomplete="email"
+                  :aria-invalid="!!errors.length"
+                  v-bind="methods"
+                >
+                <button
+                  v-if="fields.length > 1"
+                  type="button"
+                  class="btn join-item"
+                  :aria-label="`Remove email ${index + 1}`"
+                  @click="remove(index)"
+                >
+                  x
+                </button>
+              </label>
+              <NotMessage
+                :name="name"
+                class="validator-hint hidden"
+              />
             </NotField>
 
-            <Button
+            <button
               type="button"
-              variant="outline"
-              size="sm"
+              class="btn mt-2 items-center btn-sm btn-neutral"
               :disabled="state.emails.length >= 5"
-              @click="append({address:''})"
+              @click="append({ address: '' })"
             >
               Add Email Address
-            </Button>
-          </NotArrayField>
-        </FieldGroup>
+            </button>
 
-        <FieldError
-          v-if="emailsRootErrors.length"
-          :errors="emailsRootErrors"
+          </div>
+
+        </fieldset>
+      
+        <NotMessage
+          name="emails"
+          class="text-error"
         />
+      </NotArrayField>
 
-        <FieldSeparator />
-      </FieldSet>
     </NotForm>
-
-    <template #footer>
-      <Field orientation="horizontal">
-        <Button
-          type="reset"
-          variant="outline"
-          :form="id"
-        >
-          Reset
-        </Button>
-        <Button
-          type="submit"
-          :form="id"
-        >
-          Submit
-        </Button>
-      </Field>
-    </template>
   </Display>
 </template>

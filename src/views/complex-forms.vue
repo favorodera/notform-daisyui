@@ -19,6 +19,19 @@ const addons = [
   },
 ] as const
 
+const plans = [
+  {
+    id: 'basic',
+    title: 'Basic',
+    description: 'For individuals and small teams',
+  },
+  {
+    id: 'pro',
+    title: 'Pro',
+    description: 'For businesses with higher demands',
+  },
+] as const
+
 const { id, reset, submit, state, setState } = useNotForm({
   schema: z.object({
     plan: z
@@ -63,99 +76,58 @@ const { id, reset, submit, state, setState } = useNotForm({
       @reset="reset()"
     >
       <div class="flex flex-col">
-        <NotField
-          v-slot="{ methods, name,errors }"
-          name="plan"
-        >
-          <fieldset class="fieldset">
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">
+            Subscription Plan
+          </legend>
 
-            <legend class="fieldset-legend">
-              Subscription Plan
-            </legend>
+          <div class="fieldset-label text-wrap">
+            Choose your subscription plan.
+          </div>
 
-            <div class="fieldset-label">
-              Choose your subscription plan.
-            </div>
+          <NotField
+            v-slot="{ methods, name, errors }"
+            name="plan"
+          >
+            <label
+              v-for="plan in plans"
+              :key="plan.id"
+              :for="plan.id"
+              class="
+                validator join join-horizontal cursor-pointer items-center gap-4
+                rounded-lg border p-4 transition
+                hover:bg-base-200
+              "
+              style="color: var(--input-color)"
+            >
+              <div class="flex-1">
+                <div class="fieldset-legend">{{ plan.title }}</div>
+                <div class="fieldset-label">{{ plan.description }}</div>
+              </div>
 
-            <div class="validator flex flex-col gap-3">
-              <label
-                for="plan-basic"
-                class="
-                  flex cursor-pointer items-center justify-between rounded-lg
-                  border p-4 transition
-                  hover:bg-base-200
-                "
-                :class="{
-                  'ring-2 ring-primary': state.plan === 'basic',
-                  'border-error': errors.length
+              <input
+                :id="plan.id"
+                type="radio"
+                :name="name"
+                :value="plan.id"
+                class="radio"
+                :checked="state.plan === plan.id"
+                :aria-invalid="!!errors.length"
+                v-bind="methods"
+                @change="(event) => {
+                  const target = event.target as HTMLInputElement;
+                  setState({ plan: target.value }, false)
+                  methods.onChange()
                 }"
               >
-                <div class="flex-1">
-                  <div class="fieldset-legend">Basic</div>
-                  <div class="label text-sm">
-                    For individuals and small teams
-                  </div>
-                </div>
-                <input
-                  id="plan-basic"
-                  type="radio"
-                  name="plan"
-                  value="basic"
-                  :aria-invalid="!!errors.length"
-                  class="radio radio-primary"
-                  :checked="state.plan === 'basic'"
-                  v-bind="methods"
-                  @change="(event) => {
-                    const target = event.target as HTMLInputElement;
-                    setState({ plan: target.value }, false)
-                    methods.onChange()
-                  }"
-                >
-              </label>
-
-              <label
-                for="plan-pro"
-                class="
-                  flex cursor-pointer items-center justify-between rounded-lg
-                  border p-4 transition
-                  hover:bg-base-200
-                "
-                :class="{
-                  'ring-2 ring-primary': state.plan === 'pro',
-                  'border-error': errors.length
-                }"
-              >
-                <div class="flex-1">
-                  <div class="fieldset-legend">Pro</div>
-                  <div class="label text-sm">
-                    For businesses with higher demands
-                  </div>
-                </div>
-                <input
-                  id="plan-pro"
-                  type="radio"
-                  name="plan"
-                  value="pro"
-                  class="radio radio-primary"
-                  :checked="state.plan === 'pro'"
-                  :aria-invalid="!!errors.length"
-                  v-bind="methods"
-                  @change="(event) => {
-                    const target = event.target as HTMLInputElement;
-                    setState({ plan: target.value }, false)
-                    methods.onChange()
-                  }"
-                >
-              </label>
-
-            </div>
+            </label>
 
             <NotMessage
               :name="name"
-              class="validator-hint"
+              class="validator-hint hidden"
             />
-          </fieldset>
-        </NotField>
+          </NotField>
+        </fieldset>
 
         <div class="divider" />
 
@@ -163,13 +135,16 @@ const { id, reset, submit, state, setState } = useNotForm({
           v-slot="{ methods, name, errors }"
           name="billingPeriod"
         >
-          <div class="fieldset">
-            <label
-              :for="name"
-              class="fieldset-legend"
-            >
-              Billing Period
-            </label>
+          <label
+            :for="name"
+            class="fieldset"
+          >
+            <span class="fieldset-legend">Billing Period</span>
+
+            <div class="fieldset-label text-wrap">
+              Choose how often you want to be billed.
+            </div>
+
             <select
               :id="name"
               v-model="state.billingPeriod"
@@ -192,79 +167,63 @@ const { id, reset, submit, state, setState } = useNotForm({
                 Yearly
               </option>
             </select>
-            <div class="label">
-              Choose how often you want to be billed.
-            </div>
+
             <NotMessage
               :name="name"
-              class="validator-hint"
+              class="validator-hint hidden"
             />
-          </div>
+          </label>
         </NotField>
 
         <div class="divider" />
 
-        <NotField
-          v-slot="{ methods, name, errors }"
-          name="addons"
-        >
-          <fieldset class="fieldset">
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">
+            Add-ons
+          </legend>
 
-            <legend class="fieldset-legend">
-              Add-ons
-            </legend>
+          <div class="fieldset-label text-wrap">
+            Select additional features you'd like to include.
+          </div>
 
-            <div class="label">
-              Select additional features you'd like to include.
-            </div>
-
-            <div class="validator flex flex-col gap-3">
-
-              <div
-                v-for="addon in addons"
-                :key="addon.id"
-                class="join join-horizontal gap-4"
+          <NotField
+            v-slot="{ methods, name, errors }"
+            name="addons"
+          >
+            <label
+              v-for="addon in addons"
+              :key="addon.id"
+              :for="addon.id"
+              class="validator join join-horizontal gap-4"
+            >
+              <input
+                :id="addon.id"
+                type="checkbox"
+                class="checkbox"
+                :checked="state.addons.includes(addon.id)"
+                :aria-invalid="!!errors.length"
+                v-bind="methods"
+                @change="(event) => {
+                  const target = event.target as HTMLInputElement;
+                  const newAddons = target.checked
+                    ? [...state.addons, addon.id]
+                    : state.addons.filter(id => id !== addon.id);
+                  setState({ addons: newAddons }, false);
+                  methods.onChange()
+                }"
               >
-
-                <input
-                  :id="addon.id"
-                  type="checkbox"
-                  class="validator checkbox"
-                  :checked="state.addons.includes(addon.id)"
-                  :aria-invalid="!!errors.length"
-                  v-bind="methods"
-                  @change="(event) => {
-                    const target = event.target as HTMLInputElement;
-                    const newAddons = target.checked
-                      ? [...state.addons, addon.id]
-                      : state.addons.filter(id => id !== addon.id);
-                    setState({ addons: newAddons }, false);
-                    methods.onChange()
-                  }"
-                >
-
-                <div class="flex flex-col">
-
-                  <label
-                    :for="addon.id"
-                    class="label p-0"
-                  >
-                    {{ addon.title }}
-                  </label>
-
-                  <div class="text-xs opacity-70">
-                    {{ addon.description }}
-                  </div>
-                </div>
+              <div class="flex flex-col">
+                <span class="fieldset-legend">{{ addon.title }}</span>
+                <span class="text-xs opacity-70">{{ addon.description }}</span>
               </div>
-            </div>
+            </label>
 
             <NotMessage
               :name="name"
-              class="validator-hint"
+              class="validator-hint hidden"
             />
-          </fieldset>
-        </NotField>
+          </NotField>
+        </fieldset>
 
         <div class="divider" />
 
@@ -272,20 +231,19 @@ const { id, reset, submit, state, setState } = useNotForm({
           v-slot="{ methods, name, errors }"
           name="emailNotifications"
         >
-          <div
-            class="validator join join-horizontal items-center justify-between"
+          <label
+            :for="name"
+            class="
+              validator join join-horizontal cursor-pointer items-center gap-4
+            "
           >
-            <div class="join join-vertical">
-              <label
-                :for="name"
-                class="fieldset-legend"
-              >
-                Email Notifications
-              </label>
-              <div class="label text-wrap">
+            <div class="flex-1">
+              <div class="fieldset-legend">Email Notifications</div>
+              <div class="fieldset-label text-wrap">
                 Receive email updates about your subscription
               </div>
             </div>
+
             <input
               :id="name"
               v-model="state.emailNotifications"
@@ -296,10 +254,10 @@ const { id, reset, submit, state, setState } = useNotForm({
               :checked="state.emailNotifications"
               :aria-invalid="!!errors.length"
             >
-          </div>
+          </label>
           <NotMessage
             :name="name"
-            class="validator-hint"
+            class="validator-hint hidden"
           />
         </NotField>
       </div>

@@ -34,13 +34,13 @@ const { id, reset, submit, state } = useNotForm({
         v-slot="{ errors, name, methods }"
         name="username"
       >
-        <div class="fieldset">
-          <label
-            :for="name"
-            class="fieldset-legend"
-          >
-            Username
-          </label>
+
+        <label
+          :for="name"
+          class="fieldset"
+        >
+
+          <span class="fieldset-legend">Username</span>
 
           <input
             :id="name"
@@ -53,19 +53,11 @@ const { id, reset, submit, state } = useNotForm({
             :aria-invalid="!!errors.length"
           >
 
-          <div
-            class="label text-wrap"
-          >
-            This is your public display name. Must be between 3 and 10
-            characters. Must only contain letters, numbers, and
-            underscores.
-          </div>
-
           <NotMessage
             :name="name"
-            class="validator-hint"
+            class="validator-hint hidden"
           />
-        </div>
+        </label>
 
       </NotField>
 

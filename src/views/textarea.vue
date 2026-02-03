@@ -30,20 +30,22 @@ const { id, reset, submit, state } = useNotForm({
         v-slot="{ errors, name, methods }"
         name="about"
       >
-        <div class="fieldset">
-          <label
-            :for="name"
+        <label
+          class="fieldset"
+          :for="name"
+        >
+          <span
             class="fieldset-legend"
           >
             More about you
-          </label>
+          </span>
 
           <textarea
             :id="name"
             v-bind="methods"
             v-model="state.about"
             placeholder="I'm a software engineer..."
-            class="textarea min-h-[120px] w-full"
+            class="validator textarea w-full"
             :aria-invalid="!!errors.length"
           />
 
@@ -55,9 +57,9 @@ const { id, reset, submit, state } = useNotForm({
 
           <NotMessage
             :name="name"
-            class="validator-hint"
+            class="validator-hint hidden"
           />
-        </div>
+        </label>
       </NotField>
     </NotForm>
 

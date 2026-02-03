@@ -39,21 +39,20 @@ const spokenLanguages = [
       @submit="submit"
       @reset="reset()"
     >
-      <div class="fieldset">
-        <NotField
-          v-slot="{ errors, name, methods }"
-          name="language"
+
+      <NotField
+        v-slot="{ errors, name, methods }"
+        name="language"
+      >
+        <label
+          :for="name"
+          class="fieldset"
         >
 
-          <label
-            :for="name"
-            class="fieldset-legend"
-          >
-            Spoken Language
-          </label>
+          <span class="fieldset-legend">Spoken Language</span>
 
           <div
-            class="label text-wrap"
+            class="fieldset-label text-wrap"
           >
             For best results, select the language you speak.
           </div>
@@ -73,9 +72,11 @@ const spokenLanguages = [
             >
               Select
             </option>
+
             <option value="auto">
               Auto
             </option>
+            
             <option
               v-for="language in spokenLanguages"
               :key="language.value"
@@ -88,10 +89,12 @@ const spokenLanguages = [
 
           <NotMessage
             :name="name"
-            class="validator-hint"
+            class="validator-hint hidden"
           />
-        </NotField>
-      </div>
+        </label>
+
+      </NotField>
+
     </NotForm>
 
   </Display>

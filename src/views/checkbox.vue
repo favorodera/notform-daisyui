@@ -43,102 +43,98 @@ const { id, submit, reset, setState, state } = useNotForm({
       @submit="submit"
       @reset="reset()"
     >
-      <div class="fieldset">
+
+      <fieldset class="fieldset">
+        <legend class="fieldset-legend">
+          Responses
+        </legend>
+
+        <div class="fieldset-label text-wrap">
+          Get notified for requests that take time, like research or image
+          generation.
+        </div>
 
         <NotField
-          v-slot="{ name,errors}"
+          v-slot="{ name,errors,methods}"
           name="responses"
         >
-          <fieldset class="fieldset">
-            <legend class="fieldset-legend">
-              Responses
-            </legend>
-
-            <div class="label">
-              Get notified for requests that take time, like research or image
-              generation.
-            </div>
-
-            <div class="join join-horizontal gap-4">
-
-              <input
-                :id="name"
-                v-model="state.responses"
-                :name="name"
-                disabled
-                type="checkbox"
-                class="checkbox"
-                :checked="state.responses"
-                :aria-invalid="!!errors.length"
-              >
-              <label
-                :for="name"
-                class="label"
-              >
-                Push notifications
-              </label>
-
-            </div>
-            
-          </fieldset>
+      
+          <label
+            :for="name"
+            class="validator join join-horizontal gap-4"
+          >
+            <input
+              :id="name"
+              v-model="state.responses"
+              v-bind="methods"
+              :name="name"
+              type="checkbox"
+              disabled
+              :checked="state.responses"
+              class="checkbox"
+              :aria-invalid="!!errors.length"
+            >
+            <span class="fieldset-legend">Push notifications</span>
+          </label>
+          
+          <NotMessage
+            :name="name"
+            class="validator-hint hidden"
+          />
         </NotField>
+      </fieldset>
 
-        <div class="divider" />
+      <div class="divider" />
+
+      <fieldset class="fieldset">
+        <legend class="fieldset-legend">
+          Tasks
+        </legend>
+
+        <div class="fieldset-label text-wrap">
+          Get notified when tasks you've created have updates.
+        </div>
 
         <NotField
-          v-slot="{ name,methods,errors, }"
+          v-slot="{ name,errors,methods}"
           name="tasks"
         >
-          <fieldset class="fieldset">
-            <legend class="fieldset-legend">
-              Tasks
-            </legend>
-
-            <div class="label">
-              Get notified when tasks you've created have updates.
-            </div>
-
-            <div
-              v-for="task in tasks"
-              :key="task.id"
-              class="validator join join-horizontal gap-4"
-            >
-              <input
-                :id="task.id"
-                :name="name"
-                :value="task.id"
-                type="checkbox"
-                class="validator checkbox"
-                :checked="state.tasks.includes(task.id)"
-                :aria-invalid="!!errors.length"
-                v-bind="methods"
-                @change="(event) => {
-                  const target = event.target as HTMLInputElement;
-                  const newTasks = target.checked
-                    ? [...state.tasks, task.id]
-                    : state.tasks.filter(id => id !== task.id);
-        
-                  setState({ tasks: newTasks },false);
-                  methods.onChange()
-                }"
-              >
-              <label
-                :for="task.id"
-                class="label"
-              >
-                {{ task.label }}
-              </label>
-              
-            </div>
-            <NotMessage
+      
+          <label
+            v-for="task in tasks"
+            :key="task.id"
+            :for="task.id"
+            class="validator join join-horizontal gap-4"
+          >
+            <input
+              :id="task.id"
               :name="name"
-              class="validator-hint"
-            />
-            
-          </fieldset>
+              :value="task.id"
+              type="checkbox"
+              class="checkbox"
+              :checked="state.tasks.includes(task.id)"
+              :aria-invalid="!!errors.length"
+              v-bind="methods"
+              @change="(event) => {
+                const target = event.target as HTMLInputElement;
+                const newTasks = target.checked
+                  ? [...state.tasks, task.id]
+                  : state.tasks.filter(id => id !== task.id);
+        
+                setState({ tasks: newTasks },false);
+                methods.onChange()
+              }"
+            >
+            <span class="fieldset-legend">{{ task.label }}</span>
+          </label>
+          
+          <NotMessage
+            :name="name"
+            class="validator-hint hidden"
+          />
         </NotField>
+      </fieldset>
 
-      </div>
     </NotForm>
 
   </Display>

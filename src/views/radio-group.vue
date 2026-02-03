@@ -40,60 +40,62 @@ const { state, id, submit, reset, setState } = useNotForm({
       @submit="submit"
       @reset="reset()"
     >
-      <NotField
-        v-slot="{ errors, name, methods }"
-        name="plan"
-      >
-        <fieldset class="fieldset">
-          <legend class="fieldset-legend">
-            Plan
-          </legend>
-          
-          <div class="label">
-            You can upgrade or downgrade your plan at any time.
-          </div>
-          
-          <div class="validator flex flex-col gap-3">
-            <label
-              v-for="plan in plans"
-              :key="plan.id"
-              :for="plan.id"
-              class="
-                flex cursor-pointer items-center justify-between rounded-lg
-                border p-4 transition
-                hover:bg-base-200
-              "
-              :class="{ 'ring-2 ring-primary': state.plan === plan.id }"
-            >
-              <div class="flex-1">
-                <div class="fieldset-legend">{{ plan.title }}</div>
-                <div class="label">{{ plan.description }}</div>
-              </div>
-              
-              <input
-                :id="plan.id"
-                :name="name"
-                :value="plan.id"
-                type="radio"
-                class="radio radio-primary"
-                :checked="state.plan === plan.id"
-                :aria-invalid="!!errors.length"
-                v-bind="methods"
-                @change="(event) => {
-                  const target = event.target as HTMLInputElement;
-                  setState({plan:target.value},false)
-                  methods.onChange()
-                }"
-              >
-            </label>
-          </div>
 
+      <fieldset class="fieldset">
+        <legend class="fieldset-legend">
+          Plan
+        </legend>
+
+        <div class="fieldset-label text-wrap">
+          You can upgrade or downgrade your plan at any time.
+        </div>
+
+        <NotField
+          v-slot="{ name,errors,methods}"
+          name="plan"
+        >
+      
+          <label
+            v-for="plan in plans"
+            :key="plan.id"
+            :for="plan.id"
+            class="
+              validator join join-horizontal cursor-pointer items-center gap-4
+              rounded-lg border p-4 transition
+              hover:bg-base-200
+            "
+            style="color: var(--input-color)"
+          >
+
+            <div class="flex-1">
+              <div class="fieldset-legend">{{ plan.title }}</div>
+              <div class="fieldset-label">{{ plan.description }}</div>
+            </div>
+
+            <input
+              :id="plan.id"
+              :name="name"
+              :value="plan.id"
+              type="radio"
+              class="radio"
+              :checked="state.plan === plan.id"
+              :aria-invalid="!!errors.length"
+              v-bind="methods"
+              @change="(event) => {
+                const target = event.target as HTMLInputElement;
+                setState({plan:target.value},false)
+                methods.onChange()
+              }"
+            >
+          </label>
+          
           <NotMessage
             :name="name"
-            class="validator-hint"
+            class="validator-hint hidden"
           />
-        </fieldset>
-      </NotField>
+        </NotField>
+
+      </fieldset>
     </NotForm>
   </Display>
 </template>

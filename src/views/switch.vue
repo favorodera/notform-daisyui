@@ -25,52 +25,43 @@ const { id, reset, submit, state } = useNotForm({
       @submit="submit"
       @reset="reset()"
     >
-      <div class="fieldset">
-        <NotField
-          v-slot="{ errors, name, methods }"
-          name="twoFactor"
+
+
+      <NotField
+        v-slot="{ name,errors,methods}"
+        name="twoFactor"
+      >
+      
+        <label
+          :for="name"
+          class="
+            validator join join-horizontal cursor-pointer items-center gap-4
+          "
         >
 
-
-          <div
-            class="validator join join-horizontal items-center justify-between"
-          >
-
-            <div class="join join-vertical">
-              <label
-                :for="name"
-                class="fieldset-legend"
-              >
-                Multi-factor authentication
-              </label>
-
-              <div
-                class="label text-wrap"
-              >
-                Enable two-factor authentication to add an extra layer of security to your account.
-              </div>
-
-            </div>
-
-            <input
-              :id="name"
-              v-model="state.twoFactor"
-              type="checkbox"
-              class="toggle"
-              :name="name"
-              v-bind="methods"
-              :checked="state.twoFactor"
-              :aria-invalid="!!errors.length"
-            >
-
+          <div class="flex-1">
+            <div class="fieldset-legend">Multi-factor authentication</div>
+            <div class="fieldset-label">Enable two-factor authentication to add an extra layer of security to your account.</div>
           </div>
 
-          <NotMessage
+          <input
+            :id="name"
+            v-model="state.twoFactor"
+            type="checkbox"
+            class="validator toggle"
             :name="name"
-            class="validator-hint"
-          />
-        </NotField>
-      </div>
+            v-bind="methods"
+            :checked="state.twoFactor"
+            :aria-invalid="!!errors.length"
+          >
+        </label>
+          
+        <NotMessage
+          :name="name"
+          class="validator-hint hidden"
+        />
+      </NotField>
+
     </NotForm>
   </Display>
 </template>
