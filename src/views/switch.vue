@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { Switch } from '@/components/switch'
-import { NotForm, NotField } from 'notform'
+import { NotForm, NotField, NotMessage } from 'notform'
 
 const { id, reset, submit, state } = useNotForm({
   schema: z.object({
@@ -11,70 +10,67 @@ const { id, reset, submit, state } = useNotForm({
   initialState: {
     twoFactor: false,
   },
-  onSubmit: data => submitToast(data),
+  onSubmit: data => newToast(data),
 })
 
 </script>
 
 <template>
-  <Display title="Switch">
+  <Display
+    :form-id="id"
+    title="Switch"
+  >
     <NotForm
       :id
       @submit="submit"
       @reset="reset()"
     >
-      <FieldGroup>
+      <div class="fieldset">
         <NotField
           v-slot="{ errors, name, methods }"
           name="twoFactor"
         >
-          <Field
-            orientation="horizontal"
-            :data-invalid="!!errors.length"
+
+
+          <div
+            class="validator join join-horizontal items-center justify-between"
           >
-            <FieldContent>
-              <FieldLabel :for="name">
+
+            <div class="join join-vertical">
+              <label
+                :for="name"
+                class="fieldset-legend"
+              >
                 Multi-factor authentication
-              </FieldLabel>
+              </label>
 
-              <FieldDescription>
+              <div
+                class="label text-wrap"
+              >
                 Enable two-factor authentication to add an extra layer of security to your account.
-              </FieldDescription>
+              </div>
 
-              <FieldError
-                v-if="errors.length"
-                :errors="errors"
-              />
-            </FieldContent>
+            </div>
 
-            <Switch
+            <input
               :id="name"
               v-model="state.twoFactor"
+              type="checkbox"
+              class="toggle"
               :name="name"
+              v-bind="methods"
+              :checked="state.twoFactor"
               :aria-invalid="!!errors.length"
-              @update:model-value="methods.onBlur()"
-            />
-          </Field>
-        </NotField>
-      </FieldGroup>
-    </NotForm>
+            >
 
-    <template #footer>
-      <Field orientation="horizontal">
-        <Button
-          type="reset"
-          variant="outline"
-          :form="id"
-        >
-          Reset
-        </Button>
-        <Button
-          type="submit"
-          :form="id"
-        >
-          Submit
-        </Button>
-      </Field>
-    </template>
+          </div>
+
+          <NotMessage
+            :name="name"
+            class="validator-hint"
+          />
+        </NotField>
+      </div>
+    </NotForm>
   </Display>
 </template>

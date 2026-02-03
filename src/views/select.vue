@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { Select } from '@/components/select'
-import { NotForm, NotField } from 'notform'
+import { NotForm, NotField, NotMessage } from 'notform'
 
 const { id, reset, submit, state } = useNotForm({
   schema: z.object({
@@ -15,7 +14,7 @@ const { id, reset, submit, state } = useNotForm({
   initialState: {
     language: '',
   },
-  onSubmit: data => submitToast(data),
+  onSubmit: data => newToast(data),
 })
 
 const spokenLanguages = [
@@ -31,87 +30,69 @@ const spokenLanguages = [
 </script>
 
 <template>
-  <Display title="Select">
+  <Display
+    :form-id="id"
+    title="Select"
+  >
     <NotForm
       :id
       @submit="submit"
       @reset="reset()"
     >
-      <FieldGroup>
+      <div class="fieldset">
         <NotField
           v-slot="{ errors, name, methods }"
           name="language"
         >
-          <Field
-            orientation="responsive"
-            :data-invalid="!!errors.length"
+
+          <label
+            :for="name"
+            class="fieldset-legend"
           >
-            <FieldContent>
-              <FieldLabel :for="name">
-                Spoken Language
-              </FieldLabel>
+            Spoken Language
+          </label>
 
-              <FieldDescription>
-                For best results, select the language you speak.
-              </FieldDescription>
+          <div
+            class="label text-wrap"
+          >
+            For best results, select the language you speak.
+          </div>
 
-              <FieldError
-                v-if="errors.length"
-                :errors="errors"
-              />
-            </FieldContent>
-
-
-            <Select
-              v-model="state.language"
-              :name="name"
-              @update:model-value="methods.onBlur()"
+          <select
+            :id="name"
+            v-bind="methods"
+            v-model="state.language"
+            class="validator select w-full"
+            :aria-invalid="!!errors.length"
+          >
+            <option
+              value=""
+              disabled
+              selected
+              hidden
             >
-              <SelectTrigger
-                :id="name"
-                :aria-invalid="!!errors.length"
-                class="min-w-[120px]"
-              >
-                <SelectValue placeholder="Select" />
-              </SelectTrigger>
+              Select
+            </option>
+            <option value="auto">
+              Auto
+            </option>
+            <option
+              v-for="language in spokenLanguages"
+              :key="language.value"
+              :value="language.value"
+              :selected="language.value === state.language"
+            >
+              {{ language.label }}
+            </option>
+          </select>
 
-              <SelectContent position="item-aligned">
-                <SelectItem value="auto">
-                  Auto
-                </SelectItem>
-
-                <SelectSeparator />
-
-                <SelectItem
-                  v-for="language in spokenLanguages"
-                  :key="language.value"
-                  :value="language.value"
-                >
-                  {{ language.label }}
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </Field>
+          <NotMessage
+            :name="name"
+            class="validator-hint"
+          />
         </NotField>
-      </FieldGroup>
+      </div>
     </NotForm>
 
-    <template #footer>
-      <Field orientation="horizontal">
-        <Button
-          type="reset"
-          variant="outline"
-          :form="id"
-        >
-          Reset
-        </Button>
-        <Button
-          type="submit"
-          :form="id"
-        >
-          Submit
-        </Button>
-      </Field>
-    </template>
   </Display>
 </template>

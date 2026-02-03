@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { NotForm, NotField } from 'notform'
+import { NotForm, NotField, NotMessage } from 'notform'
 
 const addons = [
   {
@@ -48,212 +48,263 @@ const { id, reset, submit, state, setState } = useNotForm({
     addons: [],
     emailNotifications: false,
   },
-  onSubmit: data => submitToast(data),
+  onSubmit: data => newToast(data),
 })
 </script>
 
 <template>
-  <Display title="Complex Form">
+  <Display
+    :form-id="id"
+    title="Complex Form"
+  >
     <NotForm
       :id
       @submit="submit"
       @reset="reset()"
     >
-      <FieldGroup>
+      <div class="flex flex-col">
         <NotField
-          v-slot="{ methods, name, errors }"
+          v-slot="{ methods, name,errors }"
           name="plan"
         >
-          <FieldSet :data-invalid="!!errors.length">
-            <FieldLegend variant="label">
+          <fieldset class="fieldset">
+
+            <legend class="fieldset-legend">
               Subscription Plan
-            </FieldLegend>
-            <FieldDescription>
+            </legend>
+
+            <div class="fieldset-label">
               Choose your subscription plan.
-            </FieldDescription>
-            <RadioGroup
-              v-model="state.plan"
+            </div>
+
+            <div class="validator flex flex-col gap-3">
+              <label
+                for="plan-basic"
+                class="
+                  flex cursor-pointer items-center justify-between rounded-lg
+                  border p-4 transition
+                  hover:bg-base-200
+                "
+                :class="{
+                  'ring-2 ring-primary': state.plan === 'basic',
+                  'border-error': errors.length
+                }"
+              >
+                <div class="flex-1">
+                  <div class="fieldset-legend">Basic</div>
+                  <div class="label text-sm">
+                    For individuals and small teams
+                  </div>
+                </div>
+                <input
+                  id="plan-basic"
+                  type="radio"
+                  name="plan"
+                  value="basic"
+                  :aria-invalid="!!errors.length"
+                  class="radio radio-primary"
+                  :checked="state.plan === 'basic'"
+                  v-bind="methods"
+                  @change="(event) => {
+                    const target = event.target as HTMLInputElement;
+                    setState({ plan: target.value }, false)
+                    methods.onChange()
+                  }"
+                >
+              </label>
+
+              <label
+                for="plan-pro"
+                class="
+                  flex cursor-pointer items-center justify-between rounded-lg
+                  border p-4 transition
+                  hover:bg-base-200
+                "
+                :class="{
+                  'ring-2 ring-primary': state.plan === 'pro',
+                  'border-error': errors.length
+                }"
+              >
+                <div class="flex-1">
+                  <div class="fieldset-legend">Pro</div>
+                  <div class="label text-sm">
+                    For businesses with higher demands
+                  </div>
+                </div>
+                <input
+                  id="plan-pro"
+                  type="radio"
+                  name="plan"
+                  value="pro"
+                  class="radio radio-primary"
+                  :checked="state.plan === 'pro'"
+                  :aria-invalid="!!errors.length"
+                  v-bind="methods"
+                  @change="(event) => {
+                    const target = event.target as HTMLInputElement;
+                    setState({ plan: target.value }, false)
+                    methods.onChange()
+                  }"
+                >
+              </label>
+
+            </div>
+
+            <NotMessage
               :name="name"
-              :aria-invalid="!!errors.length"
-              @update:model-value="methods.onBlur()"
-            >
-              <FieldLabel for="plan-basic">
-                <Field orientation="horizontal">
-                  <FieldContent>
-                    <FieldTitle>Basic</FieldTitle>
-                    <FieldDescription>
-                      For individuals and small teams
-                    </FieldDescription>
-                  </FieldContent>
-                  <RadioGroupItem
-                    id="plan-basic"
-                    value="basic"
-                  />
-                </Field>
-              </FieldLabel>
-              <FieldLabel for="plan-pro">
-                <Field orientation="horizontal">
-                  <FieldContent>
-                    <FieldTitle>Pro</FieldTitle>
-                    <FieldDescription>
-                      For businesses with higher demands
-                    </FieldDescription>
-                  </FieldContent>
-                  <RadioGroupItem
-                    id="plan-pro"
-                    value="pro"
-                  />
-                </Field>
-              </FieldLabel>
-            </RadioGroup>
-            <FieldError
-              v-if="errors.length"
-              :errors="errors"
+              class="validator-hint"
             />
-          </FieldSet>
+          </fieldset>
         </NotField>
 
-        <FieldSeparator />
+        <div class="divider" />
 
         <NotField
           v-slot="{ methods, name, errors }"
           name="billingPeriod"
         >
-          <Field :data-invalid="!!errors.length">
-            <FieldLabel :for="name">
-              Billing Period
-            </FieldLabel>
-            <Select
-              v-model="state.billingPeriod"
-              :name="name"
-              @update:model-value="methods.onBlur()"
+          <div class="fieldset">
+            <label
+              :for="name"
+              class="fieldset-legend"
             >
-              <SelectTrigger
-                :id="name"
-                :aria-invalid="!!errors.length"
+              Billing Period
+            </label>
+            <select
+              :id="name"
+              v-model="state.billingPeriod"
+              class="validator select w-full"
+              :aria-invalid="!!errors.length"
+              v-bind="methods"
+            >
+              <option
+                value=""
+                disabled
+                selected
+                hidden
               >
-                <SelectValue placeholder="Select" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="monthly">
-                  Monthly
-                </SelectItem>
-                <SelectItem value="yearly">
-                  Yearly
-                </SelectItem>
-              </SelectContent>
-            </Select>
-            <FieldDescription>
+                Select
+              </option>
+              <option value="monthly">
+                Monthly
+              </option>
+              <option value="yearly">
+                Yearly
+              </option>
+            </select>
+            <div class="label">
               Choose how often you want to be billed.
-            </FieldDescription>
-            <FieldError
-              v-if="errors.length"
-              :errors="errors"
+            </div>
+            <NotMessage
+              :name="name"
+              class="validator-hint"
             />
-          </Field>
+          </div>
         </NotField>
 
-        <FieldSeparator />
+        <div class="divider" />
 
         <NotField
           v-slot="{ methods, name, errors }"
           name="addons"
         >
-          <FieldSet :data-invalid="!!errors.length">
-            <FieldLegend>Add-ons</FieldLegend>
-            <FieldDescription>
+          <fieldset class="fieldset">
+
+            <legend class="fieldset-legend">
+              Add-ons
+            </legend>
+
+            <div class="label">
               Select additional features you'd like to include.
-            </FieldDescription>
-            <FieldGroup data-slot="checkbox-group">
-              <Field
+            </div>
+
+            <div class="validator flex flex-col gap-3">
+
+              <div
                 v-for="addon in addons"
                 :key="addon.id"
-                orientation="horizontal"
-                :data-invalid="!!errors.length"
+                class="join join-horizontal gap-4"
               >
-                <Checkbox
-                  :id="`addon-${addon.id}`"
-                  :name="name"
+
+                <input
+                  :id="addon.id"
+                  type="checkbox"
+                  class="validator checkbox"
+                  :checked="state.addons.includes(addon.id)"
                   :aria-invalid="!!errors.length"
-                  :model-value="state.addons.includes(addon.id)"
-                  @update:model-value="(checked: boolean | 'indeterminate') => {
-                    const currentAddons = state.addons || []
-                    const newValue = checked
-                      ? [...currentAddons, addon.id]
-                      : currentAddons.filter((id: string) => id !== addon.id)
-                    setState({ addons: newValue })
-                    methods.onBlur()
+                  v-bind="methods"
+                  @change="(event) => {
+                    const target = event.target as HTMLInputElement;
+                    const newAddons = target.checked
+                      ? [...state.addons, addon.id]
+                      : state.addons.filter(id => id !== addon.id);
+                    setState({ addons: newAddons }, false);
+                    methods.onChange()
                   }"
-                />
-                <FieldContent>
-                  <FieldLabel :for="`addon-${addon.id}`">
+                >
+
+                <div class="flex flex-col">
+
+                  <label
+                    :for="addon.id"
+                    class="label p-0"
+                  >
                     {{ addon.title }}
-                  </FieldLabel>
-                  <FieldDescription>
+                  </label>
+
+                  <div class="text-xs opacity-70">
                     {{ addon.description }}
-                  </FieldDescription>
-                </FieldContent>
-              </Field>
-            </FieldGroup>
-            <FieldError
-              v-if="errors.length"
-              :errors="errors"
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <NotMessage
+              :name="name"
+              class="validator-hint"
             />
-          </FieldSet>
+          </fieldset>
         </NotField>
 
-        <FieldSeparator />
+        <div class="divider" />
 
         <NotField
           v-slot="{ methods, name, errors }"
           name="emailNotifications"
         >
-          <Field
-            orientation="horizontal"
-            :data-invalid="!!errors.length"
+          <div
+            class="validator join join-horizontal items-center justify-between"
           >
-            <FieldContent>
-              <FieldLabel :for="name">
+            <div class="join join-vertical">
+              <label
+                :for="name"
+                class="fieldset-legend"
+              >
                 Email Notifications
-              </FieldLabel>
-              <FieldDescription>
+              </label>
+              <div class="label text-wrap">
                 Receive email updates about your subscription
-              </FieldDescription>
-            </FieldContent>
-            <Switch
+              </div>
+            </div>
+            <input
               :id="name"
               v-model="state.emailNotifications"
+              type="checkbox"
+              class="validator toggle"
               :name="name"
+              v-bind="methods"
+              :checked="state.emailNotifications"
               :aria-invalid="!!errors.length"
-              @update:model-value="methods.onBlur()"
-            />
-            <FieldError
-              v-if="errors.length"
-              :errors="errors"
-            />
-          </Field>
+            >
+          </div>
+          <NotMessage
+            :name="name"
+            class="validator-hint"
+          />
         </NotField>
-
-        <FieldSeparator />
-      </FieldGroup>
+      </div>
     </NotForm>
 
-    <template #footer>
-      <Field orientation="horizontal">
-        <Button
-          type="reset"
-          variant="outline"
-          :form="id"
-        >
-          Reset
-        </Button>
-        <Button
-          type="submit"
-          :form="id"
-        >
-          Save Preferences
-        </Button>
-      </Field>
-    </template>
   </Display>
 </template>
+

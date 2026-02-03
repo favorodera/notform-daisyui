@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { Checkbox } from '@/components/checkbox'
-import { NotForm, NotField } from 'notform'
+import { NotForm, NotField, NotMessage } from 'notform'
 
 const tasks = [
   {
@@ -13,7 +12,7 @@ const tasks = [
   },
 ] as const
 
-const { id, submit, reset, state, setState } = useNotForm({
+const { id, submit, reset, setState, state } = useNotForm({
   schema: z.object({
     responses: z.boolean(),
     tasks: z
@@ -30,130 +29,117 @@ const { id, submit, reset, state, setState } = useNotForm({
     responses: true,
     tasks: [],
   },
-  onSubmit: data => submitToast(data),
+  onSubmit: data => newToast(data),
 })
 </script>
 
 <template>
-  <Display title="Checkbox">
+  <Display
+    :form-id="id"
+    title="Checkbox"
+  >
     <NotForm
       :id
       @submit="submit"
       @reset="reset()"
     >
-      <FieldGroup>
+      <div class="fieldset">
+
         <NotField
-          v-slot="{ methods, name, errors }"
+          v-slot="{ name,errors}"
           name="responses"
         >
-          <FieldSet :data-invalid="!!errors.length">
-            <FieldLegend variant="label">
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend">
               Responses
-            </FieldLegend>
+            </legend>
 
-            <FieldDescription>
+            <div class="label">
               Get notified for requests that take time, like research or image
               generation.
-            </FieldDescription>
+            </div>
 
-            <FieldGroup data-slot="checkbox-group">
-              <Field orientation="horizontal">
-                <Checkbox
-                  :id="name"
-                  v-model="state.responses"
-                  :name="name"
-                  disabled
-                  @update:model-value="methods.onBlur()"
-                />
-                <FieldLabel
-                  :for="name"
-                  class="font-normal"
-                >
-                  Push notifications
-                </FieldLabel>
-              </Field>
-            </FieldGroup>
-            <FieldError
-              v-if="errors.length"
-              :errors="errors"
-            />
-          </FieldSet>
+            <div class="join join-horizontal gap-4">
+
+              <input
+                :id="name"
+                v-model="state.responses"
+                :name="name"
+                disabled
+                type="checkbox"
+                class="checkbox"
+                :checked="state.responses"
+                :aria-invalid="!!errors.length"
+              >
+              <label
+                :for="name"
+                class="label"
+              >
+                Push notifications
+              </label>
+
+            </div>
+            
+          </fieldset>
         </NotField>
 
-        <FieldSeparator />
+        <div class="divider" />
 
         <NotField
-          v-slot="{ methods, name, errors }"
+          v-slot="{ name,methods,errors, }"
           name="tasks"
         >
-          <FieldSet :data-invalid="!!errors.length">
-            <FieldLegend variant="label">
+          <fieldset class="fieldset">
+            <legend class="fieldset-legend">
               Tasks
-            </FieldLegend>
+            </legend>
 
-            <FieldDescription>
+            <div class="label">
               Get notified when tasks you've created have updates.
-            </FieldDescription>
+            </div>
 
-            <FieldGroup data-slot="checkbox-group">
-              <Field
-                v-for="task in tasks"
-                :key="task.id"
-                orientation="horizontal"
-                :data-invalid="!!errors.length"
+            <div
+              v-for="task in tasks"
+              :key="task.id"
+              class="validator join join-horizontal gap-4"
+            >
+              <input
+                :id="task.id"
+                :name="name"
+                :value="task.id"
+                type="checkbox"
+                class="validator checkbox"
+                :checked="state.tasks.includes(task.id)"
+                :aria-invalid="!!errors.length"
+                v-bind="methods"
+                @change="(event) => {
+                  const target = event.target as HTMLInputElement;
+                  const newTasks = target.checked
+                    ? [...state.tasks, task.id]
+                    : state.tasks.filter(id => id !== task.id);
+        
+                  setState({ tasks: newTasks },false);
+                  methods.onChange()
+                }"
               >
-                <Checkbox
-                  :id="`form-vee-checkbox-${task.id}`"
-                  :name="name"
-                  :aria-invalid="!!errors.length"
-                  :model-value="state.tasks.includes(task.id)"
-                  @update:model-value="(checked: boolean | 'indeterminate') => {
-                    const currentTasks = state.tasks || [];
-
-                    // Determine the new list of IDs
-                    const newValue = checked
-                      ? [...currentTasks, task.id] // Add if checked
-                      : currentTasks.filter((id: string) => id !== task.id); // Remove if unchecked
-
-                    // Update state and trigger change
-                    setState({ tasks: newValue });
-                    methods.onBlur();
-                  }
-                  "
-                />
-                <FieldLabel
-                  :for="`form-vee-checkbox-${task.id}`"
-                  class="font-normal"
-                >
-                  {{ task.label }}
-                </FieldLabel>
-              </Field>
-            </FieldGroup>
-            <FieldError
-              v-if="errors.length"
-              :errors="errors"
+              <label
+                :for="task.id"
+                class="label"
+              >
+                {{ task.label }}
+              </label>
+              
+            </div>
+            <NotMessage
+              :name="name"
+              class="validator-hint"
             />
-          </FieldSet>
+            
+          </fieldset>
         </NotField>
-      </FieldGroup>
+
+      </div>
     </NotForm>
 
-    <template #footer>
-      <Field orientation="horizontal">
-        <Button
-          type="reset"
-          variant="outline"
-          :form="id"
-        >
-          Reset
-        </Button>
-        <Button
-          type="submit"
-          :form="id"
-        >
-          Submit
-        </Button>
-      </Field>
-    </template>
   </Display>
 </template>

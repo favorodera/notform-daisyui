@@ -55,7 +55,7 @@ const { id, state, submit, reset } = useNotForm({
             :aria-invalid="!!errors.length"
           >
 
-           <NotMessage
+          <NotMessage
             :name="name"
             class="validator-hint"
           />

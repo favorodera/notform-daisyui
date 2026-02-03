@@ -1,6 +1,5 @@
 <script lang="ts" setup>
-import { RadioGroup } from '@/components/radio-group'
-import { NotForm, NotField } from 'notform'
+import { NotForm, NotField, NotMessage } from 'notform'
 
 const plans = [
   {
@@ -20,22 +19,24 @@ const plans = [
   },
 ] as const
 
-const { state, id, submit, reset } = useNotForm({
+const { state, id, submit, reset, setState } = useNotForm({
   schema: z.object({
     plan: z.string().min(1, 'You must select a subscription plan to continue.'),
   }),
   initialState: {
     plan: '',
   },
-  onSubmit: data => submitToast(data),
+  onSubmit: data => newToast(data),
 })
 </script>
 
 <template>
-  <Display title="Radio Group">
+  <Display
+    :form-id="id"
+    title="Radio Group"
+  >
     <NotForm
       :id="id"
-      :state="state"
       @submit="submit"
       @reset="reset()"
     >
@@ -43,68 +44,56 @@ const { state, id, submit, reset } = useNotForm({
         v-slot="{ errors, name, methods }"
         name="plan"
       >
-        <FieldSet :data-invalid="!!errors.length">
-          <FieldLegend>Plan</FieldLegend>
-
-          <FieldDescription>
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">
+            Plan
+          </legend>
+          
+          <div class="label">
             You can upgrade or downgrade your plan at any time.
-          </FieldDescription>
-
-          <RadioGroup
-            v-model="state.plan"
-            :name="name"
-            :aria-invalid="!!errors.length"
-            @update:model-value="methods.onBlur()"
-          >
-            <FieldLabel
+          </div>
+          
+          <div class="validator flex flex-col gap-3">
+            <label
               v-for="plan in plans"
               :key="plan.id"
-              :for="`${name}-${plan.id}`"
+              :for="plan.id"
+              class="
+                flex cursor-pointer items-center justify-between rounded-lg
+                border p-4 transition
+                hover:bg-base-200
+              "
+              :class="{ 'ring-2 ring-primary': state.plan === plan.id }"
             >
-              <Field
-                orientation="horizontal"
-                :data-invalid="!!errors.length"
+              <div class="flex-1">
+                <div class="fieldset-legend">{{ plan.title }}</div>
+                <div class="label">{{ plan.description }}</div>
+              </div>
+              
+              <input
+                :id="plan.id"
+                :name="name"
+                :value="plan.id"
+                type="radio"
+                class="radio radio-primary"
+                :checked="state.plan === plan.id"
+                :aria-invalid="!!errors.length"
+                v-bind="methods"
+                @change="(event) => {
+                  const target = event.target as HTMLInputElement;
+                  setState({plan:target.value},false)
+                  methods.onChange()
+                }"
               >
-                <FieldContent>
-                  <FieldTitle>{{ plan.title }}</FieldTitle>
-                  <FieldDescription>
-                    {{ plan.description }}
-                  </FieldDescription>
-                </FieldContent>
+            </label>
+          </div>
 
-                <RadioGroupItem
-                  :id="`${name}-${plan.id}`"
-                  :value="plan.id"
-                  :aria-invalid="!!errors.length"
-                />
-              </Field>
-            </FieldLabel>
-          </RadioGroup>
-
-          <FieldError
-            v-if="errors.length"
-            :errors="errors"
+          <NotMessage
+            :name="name"
+            class="validator-hint"
           />
-        </FieldSet>
+        </fieldset>
       </NotField>
     </NotForm>
-
-    <template #footer>
-      <Field orientation="horizontal">
-        <Button
-          type="reset"
-          variant="outline"
-          :form="id"
-        >
-          Reset
-        </Button>
-        <Button
-          type="submit"
-          :form="id"
-        >
-          Submit
-        </Button>
-      </Field>
-    </template>
   </Display>
 </template>
